@@ -1,0 +1,25 @@
+dev:
+  catalog_name: dev
+  schema_name: restaurant_forecasting
+prd:
+  catalog_name: prd
+  schema_name: restaurant_forecasting
+
+experiment_name_basic: /Shared/restaurant-forecasting-basic
+
+target: visitors
+
+num_features:
+  - latitude
+  - longitude
+  - holiday_flg
+
+cat_features:
+  - day_of_week
+  - air_genre_name
+  - air_area_name
+
+parameters:
+  learning_rate: 0.05
+  n_estimators: 500
+  max_depth: 6
