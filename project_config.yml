@@ -12,8 +12,8 @@ target: visitors
 num_features:
   - latitude
   - longitude
-  - holiday_flg
   - month
+  - holiday_flg
   - weekend_flg
   - visitors_lag_1
   - visitors_mean_roll_7
