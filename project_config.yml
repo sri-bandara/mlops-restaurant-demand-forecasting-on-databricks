@@ -13,11 +13,15 @@ num_features:
   - latitude
   - longitude
   - holiday_flg
+  - month
+  - weekend_flg
+  - visitors_lag_1
+  - visitors_mean_roll_7
 
 cat_features:
-  - day_of_week
-  - air_genre_name
-  - air_area_name
+  - dow
+  - store_genre
+  - area
 
 parameters:
   learning_rate: 0.05
