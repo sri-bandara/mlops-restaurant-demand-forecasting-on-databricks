@@ -15,7 +15,7 @@ num_features:
   - month
   - holiday_flg
   - weekend_flg
-  - visitors_lag_1
+  - visitors_last_day
   - visitors_mean_roll_7
 
 cat_features:
