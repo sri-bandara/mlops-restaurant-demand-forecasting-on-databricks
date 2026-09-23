@@ -40,11 +40,8 @@ class DataProcessor:
         # 4. Sort for feature building
         df = df.sort_values(["store_id", "date"]).reset_index(drop=True)
 
-        # 5. Lag-1 (date-based)
-        temp = df[["store_id", "date", "visitors"]].copy()
-        temp["date"] = temp["date"] + pd.Timedelta(days=1)
-        temp = temp.rename(columns={"visitors": "visitors_lag_1"})
-        df = pd.merge(df, temp, on=["store_id", "date"], how="left")
+        # 5. Last-open-day visitors (row-based shift)
+        df["visitors_last_day"] = df.groupby("store_id")["visitors"].shift(1)
 
         # 6. Rolling 7-day mean (date-based, excludes today)
         roll = (
@@ -58,7 +55,7 @@ class DataProcessor:
         df = pd.merge(df, roll, on=["store_id", "date"], how="left")
 
         # 7. Drop start-of-series nulls
-        df = df.dropna(subset=["visitors_lag_1", "visitors_mean_roll_7"])
+        df = df.dropna(subset=["visitors_last_day", "visitors_mean_roll_7"])
 
         # 8. Log-transform the target
         df["visitors"] = np.log1p(df["visitors"])
