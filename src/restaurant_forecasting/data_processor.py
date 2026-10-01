@@ -2,7 +2,6 @@
 
 import numpy as np
 import pandas as pd
-from sklearn.model_selection import train_test_split
 
 from restaurant_forecasting.config import ProjectConfig
 
@@ -40,10 +39,13 @@ class DataProcessor:
         # 4. Sort for feature building
         df = df.sort_values(["store_id", "date"]).reset_index(drop=True)
 
-        # 5. Last-open-day visitors (row-based shift)
+        # 5. Log-transform the target
+        df["visitors"] = np.log1p(df["visitors"])
+
+        # 6. Last-open-day visitors (row-based shift)
         df["visitors_last_day"] = df.groupby("store_id")["visitors"].shift(1)
 
-        # 6. Rolling 7-day mean (date-based, excludes today)
+        # 8. Rolling 7-day mean (date-based, excludes today)
         roll = (
             df.set_index("date")
             .groupby("store_id")["visitors"]
@@ -54,13 +56,10 @@ class DataProcessor:
         )
         df = pd.merge(df, roll, on=["store_id", "date"], how="left")
 
-        # 7. Drop start-of-series nulls
+        # 9. Drop start-of-series nulls
         df = df.dropna(subset=["visitors_last_day", "visitors_mean_roll_7"])
 
-        # 8. Log-transform the target
-        df["visitors"] = np.log1p(df["visitors"])
-
-        # 9. Ensure correct dtypes for categorical features
+        # 10. Ensure correct dtypes for categorical features
         for col in self.config.cat_features:
             df[col] = df[col].astype("category")
 
