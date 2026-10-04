@@ -139,8 +139,7 @@ class BasicModel:
             self.model_info = mlflow.sklearn.log_model(
                 sk_model=self.model,
                 name="lightgbm-model",
-                signature=signature,
-                input_example=self.X_train.iloc[:5],
+                signature=signature
             )
 
     def register_model(self) -> None:
