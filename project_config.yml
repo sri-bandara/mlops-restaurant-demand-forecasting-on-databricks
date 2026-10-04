@@ -27,3 +27,11 @@ parameters:
   learning_rate: 0.05
   n_estimators: 500
   max_depth: 6
+
+quantile_parameters:
+  learning_rate: 0.05
+  n_estimators: 500
+  max_depth: 10
+  num_leaves: 31
+
+quantile_alphas: [0.1, 0.5, 0.9]

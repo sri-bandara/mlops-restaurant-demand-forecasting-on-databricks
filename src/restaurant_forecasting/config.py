@@ -15,6 +15,8 @@ class ProjectConfig(BaseModel): #inherits from BaseModel, which means it will ha
     num_features: list[str] #should be a list of strings
     cat_features: list[str]
     parameters: dict[str, Any] #should be a dictionary mapping strings to any type of value
+    quantile_parameters: dict[str, Any]
+    quantile_alphas: list[float] #should be a list of floats
 
     @classmethod #methods usually work on objects, but class methods can be called on the class itself. 
     def from_yaml(cls, config_path: str, env: str = "dev") -> "ProjectConfig":
@@ -43,6 +45,8 @@ class ProjectConfig(BaseModel): #inherits from BaseModel, which means it will ha
             num_features=config_dict["num_features"],
             cat_features=config_dict["cat_features"],
             parameters=config_dict["parameters"],
+            quantile_parameters=config_dict["quantile_parameters"],
+            quantile_alphas=config_dict["quantile_alphas"]
         )
 
 
