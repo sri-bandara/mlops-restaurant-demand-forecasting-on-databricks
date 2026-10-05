@@ -1,0 +1,58 @@
+resources:
+  jobs:
+    restaurant_forecasting_workflow:
+      name: restaurant-forecasting-workflow
+
+      schedule:
+        quartz_cron_expression: "0 0 6 ? * MON"
+        timezone_id: "Australia/Sydney"
+        pause_status: PAUSED
+
+      tags:
+        project: restaurant-forecasting
+
+      environments:
+        - environment_key: serverless-env
+          spec:
+            environment_version: "3"
+            dependencies:
+              - ../dist/*.whl
+
+      tasks:
+        - task_key: preprocessing
+          environment_key: serverless-env
+          spark_python_task:
+            python_file: ../scripts/process_data.py
+            parameters:
+              - "--env"
+              - "${bundle.target}"
+              - "--root_path"
+              - "${workspace.root_path}/files"
+
+        - task_key: train_model
+          depends_on:
+            - task_key: preprocessing
+          environment_key: serverless-env
+          spark_python_task:
+            python_file: ../scripts/train_model.py
+            parameters:
+              - "--env"
+              - "${bundle.target}"
+              - "--root_path"
+              - "${workspace.root_path}/files"
+              - "--git_sha"
+              - "${var.git_sha}"
+              - "--branch"
+              - "${var.branch}"
+
+        - task_key: deploy_model
+          depends_on:
+            - task_key: train_model
+          environment_key: serverless-env
+          spark_python_task:
+            python_file: ../scripts/deploy_model.py
+            parameters:
+              - "--env"
+              - "${bundle.target}"
+              - "--root_path"
+              - "${workspace.root_path}/files"

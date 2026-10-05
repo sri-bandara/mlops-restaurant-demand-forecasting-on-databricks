@@ -55,6 +55,6 @@ class ModelServing:
         else:
             self.workspace.serving_endpoints.update_config(
                 name=self.endpoint_name, 
-                config=EndpointCoreConfigInput(served_entities=served_entities),
+                served_entities=served_entities,
             )
             print(f"Updated endpoint: {self.endpoint_name}")

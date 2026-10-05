@@ -4,6 +4,10 @@ bundle:
 include:
   - resources/*.yml
 
+sync:
+  include:
+    - data/data.csv
+
 artifacts:
   default:
     type: whl
