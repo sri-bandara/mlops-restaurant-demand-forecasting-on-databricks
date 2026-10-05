@@ -25,7 +25,7 @@ class QuantileModel:
         self.alphas = config.quantile_alphas
         self.catalog_name = config.catalog_name
         self.schema_name = config.schema_name
-        self.experiment_name_basic = config.experiment_name_basic
+        self.experiment_name = config.experiment_name_basic
 
     def load_data(self) -> None:
         """Load train and test sets from Unity Catalog."""
@@ -120,9 +120,10 @@ class QuantileModel:
                 signature = infer_signature(
                     self.X_train, self.models[alpha].predict(self.X_train)
                 )
+                alpha_label = f"p{int(alpha * 100)}"
                 mlflow.sklearn.log_model(
                     sk_model=self.models[alpha],
-                    name=f"quantile-model-{alpha}",
+                    name=f"quantile-model-{alpha_label}",
                     signature=signature,
                 )
                 print(f"Logged quantile model for alpha={alpha}")
