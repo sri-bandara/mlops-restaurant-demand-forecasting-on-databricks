@@ -4,6 +4,8 @@ import numpy as np
 import pandas as pd
 from lightgbm import LGBMRegressor
 from sklearn.metrics import mean_pinball_loss
+import mlflow
+from mlflow.models import infer_signature
 
 from restaurant_forecasting.config import ProjectConfig, Tags
 
@@ -23,6 +25,7 @@ class QuantileModel:
         self.alphas = config.quantile_alphas
         self.catalog_name = config.catalog_name
         self.schema_name = config.schema_name
+        self.experiment_name_basic = config.experiment_name_basic
 
     def load_data(self) -> None:
         """Load train and test sets from Unity Catalog."""
@@ -100,3 +103,26 @@ class QuantileModel:
               f"(expected ~{expected_coverage:.0%})")
 
         return self.metrics
+
+    def log_model(self) -> None:
+        """Log the quantile models and calibration metrics to MLflow."""
+        mlflow.set_experiment(self.experiment_name)
+
+        with mlflow.start_run(tags=self.tags.dict()) as run:
+            self.run_id = run.info.run_id
+
+            # Log the shared hyperparameters and all calibration metrics
+            mlflow.log_params(self.parameters)
+            mlflow.log_metrics(self.metrics)
+
+            # Log each quantile model as its own artifact
+            for alpha in self.alphas:
+                signature = infer_signature(
+                    self.X_train, self.models[alpha].predict(self.X_train)
+                )
+                mlflow.sklearn.log_model(
+                    sk_model=self.models[alpha],
+                    name=f"quantile-model-{alpha}",
+                    signature=signature,
+                )
+                print(f"Logged quantile model for alpha={alpha}")
