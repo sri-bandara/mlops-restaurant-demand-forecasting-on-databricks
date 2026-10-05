@@ -1,0 +1,33 @@
+bundle:
+  name: restaurant-forecasting
+
+include:
+  - resources/*.yml
+
+artifacts:
+  default:
+    type: whl
+    build: uv build
+    path: .
+
+variables:
+  git_sha:
+    description: git commit sha
+    default: abcd12345
+  branch:
+    description: git branch
+    default: main
+
+targets:
+  dev:
+    default: true
+    mode: development
+    workspace:
+      host: https://dbc-510a2031-5bd8.cloud.databricks.com
+      root_path: /Workspace/Users/${workspace.current_user.userName}/.bundle/${bundle.target}/${bundle.name}
+
+  prd:
+    mode: production
+    workspace:
+      host: https://dbc-510a2031-5bd8.cloud.databricks.com
+      root_path: /Shared/.bundle/${bundle.target}/${bundle.name}
