@@ -47,11 +47,14 @@ class ModelServing:
         if not endpoint_exists:
             self.workspace.serving_endpoints.create(
                 name=self.endpoint_name,
-                config=EndpointCoreConfigInput(served_entities=served_entities),
+                config=EndpointCoreConfigInput(
+                    name=self.endpoint_name,
+                    served_entities=served_entities,),
             )
             print(f"Created endpoint: {self.endpoint_name}")
         else:
             self.workspace.serving_endpoints.update_config(
-                name=self.endpoint_name, served_entities=served_entities
+                name=self.endpoint_name, 
+                config=EndpointCoreConfigInput(served_entities=served_entities),
             )
             print(f"Updated endpoint: {self.endpoint_name}")
